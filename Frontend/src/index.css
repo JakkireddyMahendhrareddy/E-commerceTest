@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* 🟢 Register Toast */
+.custom-toast-register {
+  background-color: #3b82f6 !important; /* Green */
+  font-size: 1.1rem;
+  min-height: 60px;
+  color: #ffffff !important; /* White text */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  margin-top: 50px;
+  font-weight: 400;
+}
+/* 🔵 Logout/Info Toast */
+.custom-toast-logout {
+  background-color: #3b82f6 !important; /* Blue */
+  font-size: 1.1rem;
+  min-height: 50px;
+  color: #ffffff !important;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  margin-top: 30px;
+  font-weight: 400;
+}
+
+/* 🔴 Outer Toast Container */
+.custom-toast-error {
+  background-color: #ef4545 !important; /* Tailwind red-600 */
+  min-height: 70px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #ffffff !important;
+  font-size: 1.1rem;
+  font-weight: 400;
+  text-align: center;
+}
