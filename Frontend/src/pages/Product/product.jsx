@@ -6,7 +6,6 @@ import Fotter from "../../components/Fotter";
 import { eachProduct } from "./prodctDummyData";
 import ProductValue from "./productValue";
 import SimilarProducts from "./similarProducts";
-
 import { CartContext } from "../Cart/cartContext";
 
 const Product = () => {
@@ -31,52 +30,92 @@ const Product = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col justify-center mb-5 items-start px-10 mt-5 w-full">
-        <div className="flex flex-col justify-center items-start px-10 mt-5 w-full gap-10">
-          <h5 className="text-3xl font-bold">Product Details</h5>
-          <div className="flex flex-row justify-center items-start  gap-10">
-            <div className="w-[30vw] h-[60vh] ">
+
+      {/* Main Container - Responsive padding */}
+      <div className="flex flex-col justify-center mb-5 items-start px-4 sm:px-6 md:px-8 lg:px-10 mt-5 w-full">
+        {/* Product Details Container - Responsive padding and gap */}
+        <div className="flex flex-col justify-center items-start px-2 sm:px-4 md:px-6 lg:px-10 mt-5 w-full gap-6 sm:gap-8 md:gap-10">
+          {/* Page Title - Responsive text size */}
+          <h5 className="text-xl sm:text-2xl md:text-3xl font-bold">
+            Product Details
+          </h5>
+
+          {/* Product Content - Responsive layout */}
+          <div className="flex flex-col lg:flex-row justify-center items-start gap-6 sm:gap-8 md:gap-10 w-full">
+            {/* Product Image - Responsive dimensions */}
+            <div className="w-full lg:w-[30vw] h-64 sm:h-80 md:h-96 lg:h-[60vh] flex-shrink-0">
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-full rounded-md"
+                className="w-full h-full rounded-md object-cover"
               />
             </div>
-            <div className="space-y-5 w-[50vw] h-[70vh]">
-              <h5 className="text-3xl font-semibold mb-2">{product.name} </h5>
-              <h5 className="text-lg font-semibold mb-2">{product.price}/-</h5>
-              <div className="flex flex-row justify-start items-center gap-3">
-                <button className="inline-flex items-center gap-1 px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition">
+
+            {/* Product Details - Responsive width and spacing */}
+            <div className="space-y-3 sm:space-y-4 md:space-y-5 w-full lg:w-[50vw] lg:h-[70vh]">
+              {/* Product Name - Responsive text size */}
+              <h5 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2">
+                {product.name}
+              </h5>
+
+              {/* Product Price - Responsive text size */}
+              <h5 className="text-base sm:text-lg font-semibold mb-2">
+                Rs: {product.price}/-
+              </h5>
+
+              {/* Rating and Reviews - Responsive layout */}
+              <div className="flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2 sm:gap-3">
+                <button className="inline-flex items-center gap-1 px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-blue-600 transition">
                   {product.rating}
-                  <FaStar />
+                  <FaStar className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
-                <h5 className="text-lg font-semibold  ">
+                <h5 className="text-base sm:text-lg font-semibold">
                   {product.reviews}
                   {"   "}
-                  <span className="font-normal text-red-500"> Reviews</span>
+                  <span className="font-normal text-red-500">Reviews</span>
                 </h5>
               </div>
-              <p className="text-gray-700 text-sm mb-4 leading-6 tracking-wide">
+
+              {/* Product Description - Responsive text size */}
+              <p className="text-gray-700 text-xs sm:text-sm mb-4 leading-5 sm:leading-6 tracking-wide">
                 {product.extraInfo}
               </p>
-              <h5 className="text-lg font-small">
-                <span className="text-xl font-semibold">Avalibile: </span>{" "}
+
+              {/* Product Details - Responsive text sizes */}
+              <h5 className="text-sm sm:text-base md:text-lg font-small">
+                <span className="text-base sm:text-lg md:text-xl font-semibold">
+                  Available:{" "}
+                </span>
                 {product.stock}
               </h5>
-              <h5 className="text-lg font-small">
-                <span className="text-xl font-semibold">Brand: </span>{" "}
+
+              <h5 className="text-sm sm:text-base md:text-lg font-small">
+                <span className="text-base sm:text-lg md:text-xl font-semibold">
+                  Brand:{" "}
+                </span>
                 {product.brand}
               </h5>
-              <h5 className="text-lg font-small">
-                <span className="text-xl font-semibold">Category: </span>{" "}
+
+              <h5 className="text-sm sm:text-base md:text-lg font-small">
+                <span className="text-base sm:text-lg md:text-xl font-semibold">
+                  Category:{" "}
+                </span>
                 {product.category}
               </h5>
-              <hr className="bg-gray-100 border-1 mb-5 mt-3" />
-              <ProductValue />
+
+              {/* Divider - Responsive margin */}
+              <hr className="bg-gray-100 border-1 mb-3 sm:mb-4 md:mb-5 mt-2 sm:mt-3" />
+
+              {/* Product Value Component */}
+              <div className="w-full">
+                <ProductValue />
+              </div>
+
+              {/* Add to Cart Button - Responsive sizing */}
               <Link to="/cart">
                 <button
                   onClick={handleAddToCart}
-                  className="inline-flex cursor-pointer items-center gap-1 px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition"
+                  className="inline-flex cursor-pointer items-center gap-1 px-4 sm:px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition w-full sm:w-auto justify-center sm:justify-start"
                 >
                   Add to Cart
                 </button>
@@ -84,8 +123,13 @@ const Product = () => {
             </div>
           </div>
         </div>
-        <SimilarProducts />
+
+        {/* Similar Products Section */}
+        <div className="w-full mt-6 sm:mt-8 md:mt-10">
+          <SimilarProducts />
+        </div>
       </div>
+
       <Fotter />
     </>
   );
