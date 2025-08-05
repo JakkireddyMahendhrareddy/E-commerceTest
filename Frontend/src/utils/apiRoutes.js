@@ -1,7 +1,9 @@
+export const BASE_URL = "https://e-commercebackend-1-k8yl.onrender.com";
+
 export const API_ROUTES = {
   USERS: {
-    LOGIN: "http://localhost:3000/api/users/login",
-    REGISTER: "http://localhost:3000/api/users/register",
+    LOGIN: `${BASE_URL}/api/users/login`,
+    REGISTER: `${BASE_URL}/api/users/register`,
   },
 };
 
