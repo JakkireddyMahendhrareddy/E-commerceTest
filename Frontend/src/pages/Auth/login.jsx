@@ -20,6 +20,7 @@ const Login = () => {
   // ✅ Handle logout toast notification - SIMPLE VERSION
   useEffect(() => {
     // Check if user just logged out
+    console.log(API_ROUTES.USERS.LOGIN, "llllllllllllllll");
     const justLoggedOut = localStorage.getItem("justLoggedOut");
 
     if (justLoggedOut === "true") {
