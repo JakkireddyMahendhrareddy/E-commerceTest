@@ -1,4 +1,4 @@
-export const BASE_URL = "https://e-commercebackend-1-k8yl.onrender.com";
+export const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const API_ROUTES = {
   USERS: {
