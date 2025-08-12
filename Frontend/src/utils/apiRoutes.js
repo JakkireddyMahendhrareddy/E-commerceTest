@@ -1,9 +1,17 @@
-export const BASE_URL = "https://e-commercebackend-1-k8yl.onrender.com";
+// export const BASE_URL = "https://e-commercebackend-1-k8yl.onrender.com";
+export const BASE_URL = "http://localhost:5000";
 
 export const API_ROUTES = {
   USERS: {
     LOGIN: `${BASE_URL}/api/users/login`,
     REGISTER: `${BASE_URL}/api/users/register`,
+  },
+  PRODUCT: {
+    CREATE_PRODUCT: `${BASE_URL}/api/product/create`,
+    GET_PRODUCTS: `${BASE_URL}/api/product/all`,
+  },
+  IMAGE_UPLOAD: {
+    SINGLE_IMAGE: `${BASE_URL}/api/upload`,
   },
 };
 

@@ -20,7 +20,7 @@ const Products = () => {
         </div>
 
         {/* Products Section - Responsive layout */}
-        <div className="w-full flex flex-col lg:flex-row justify-center gap-4 sm:gap-5 lg:gap-6 xl:gap-8 items-start mt-6 sm:mt-8 md:mt-10 min-h-screen">
+        <div className="w-full flex px-10 flex-col lg:flex-row justify-center gap-4 sm:gap-5 lg:gap-6 xl:gap-8 items-start mt-6 sm:mt-8 md:mt-10 min-h-screen">
           {/* Search Section - Responsive width and positioning */}
           <div className="w-full hidden lg:block lg:w-80 xl:w-96 flex-shrink-0 order-2 lg:order-1">
             <ProductsSearch />

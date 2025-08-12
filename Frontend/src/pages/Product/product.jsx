@@ -3,9 +3,9 @@ import { FaStar } from "react-icons/fa6";
 import { Link, useParams, useLocation } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Fotter from "../../components/Fotter";
-import { eachProduct } from "./prodctDummyData";
+// import { eachProduct } from "./prodctDummyData";
 import ProductValue from "./productValue";
-import SimilarProducts from "./similarProducts";
+// import SimilarProducts from "./similarProducts";
 import { CartContext } from "../Cart/cartContext";
 
 const Product = () => {
@@ -125,9 +125,9 @@ const Product = () => {
         </div>
 
         {/* Similar Products Section */}
-        <div className="w-full mt-6 sm:mt-8 md:mt-10">
+        {/* <div className="w-full mt-6 sm:mt-8 md:mt-10">
           <SimilarProducts />
-        </div>
+        </div> */}
       </div>
 
       <Fotter />
