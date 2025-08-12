@@ -1,30 +1,30 @@
 import React, { useContext } from "react";
 import { FaStar } from "react-icons/fa6";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Fotter from "../../components/Fotter";
-import { eachProduct } from "./prodctDummyData";
+// import { eachProduct } from "./prodctDummyData";
 import ProductValue from "./productValue";
-import SimilarProducts from "./similarProducts";
+// import SimilarProducts from "./similarProducts";
 import { CartContext } from "../Cart/cartContext";
 
-const Product = () => {
-  const id = useParams();
+const Product = ({ singleProduct }) => {
+  // const id = useParams();
   const { addToCart } = React.useContext(CartContext);
 
   const location = useLocation();
 
-  const [product, setProduct] = React.useState(location.state?.product || null);
+  // const [product, setProduct] = React.useState(location.state?.product || null);
 
-  React.useEffect(() => {
-    if (!product) {
-      const found = eachProduct.find((p) => p.id === id);
-      setProduct(found);
-    }
-  }, [id, product]);
+  // React.useEffect(() => {
+  //   if (!product) {
+  //     const found = eachProduct.find((p) => p.id === id);
+  //     setProduct(found);
+  //   }
+  // }, [id, product]);
 
   const handleAddToCart = () => {
-    addToCart(product);
+    addToCart(singleProduct);
   };
 
   return (
@@ -45,8 +45,8 @@ const Product = () => {
             {/* Product Image - Responsive dimensions */}
             <div className="w-full lg:w-[30vw] h-64 sm:h-80 md:h-96 lg:h-[60vh] flex-shrink-0">
               <img
-                src={product.image}
-                alt={product.name}
+                src={singleProduct.image}
+                alt={singleProduct.name}
                 className="w-full h-full rounded-md object-cover"
               />
             </div>
@@ -55,22 +55,22 @@ const Product = () => {
             <div className="space-y-3 sm:space-y-4 md:space-y-5 w-full lg:w-[50vw] lg:h-[70vh]">
               {/* Product Name - Responsive text size */}
               <h5 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2">
-                {product.name}
+                {singleProduct.name}
               </h5>
 
               {/* Product Price - Responsive text size */}
               <h5 className="text-base sm:text-lg font-semibold mb-2">
-                Rs: {product.price}/-
+                Rs: {singleProduct.price}/-
               </h5>
 
               {/* Rating and Reviews - Responsive layout */}
               <div className="flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2 sm:gap-3">
                 <button className="inline-flex items-center gap-1 px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-blue-600 transition">
-                  {product.rating}
+                  {singleProduct.rating}
                   <FaStar className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
                 <h5 className="text-base sm:text-lg font-semibold">
-                  {product.reviews}
+                  {singleProduct.reviews}
                   {"   "}
                   <span className="font-normal text-red-500">Reviews</span>
                 </h5>
@@ -78,7 +78,7 @@ const Product = () => {
 
               {/* Product Description - Responsive text size */}
               <p className="text-gray-700 text-xs sm:text-sm mb-4 leading-5 sm:leading-6 tracking-wide">
-                {product.extraInfo}
+                {singleProduct.extraInfo}
               </p>
 
               {/* Product Details - Responsive text sizes */}
@@ -86,21 +86,21 @@ const Product = () => {
                 <span className="text-base sm:text-lg md:text-xl font-semibold">
                   Available:{" "}
                 </span>
-                {product.stock}
+                {singleProduct.stock}
               </h5>
 
               <h5 className="text-sm sm:text-base md:text-lg font-small">
                 <span className="text-base sm:text-lg md:text-xl font-semibold">
                   Brand:{" "}
                 </span>
-                {product.brand}
+                {singleProduct.brand}
               </h5>
 
               <h5 className="text-sm sm:text-base md:text-lg font-small">
                 <span className="text-base sm:text-lg md:text-xl font-semibold">
                   Category:{" "}
                 </span>
-                {product.category}
+                {singleProduct.category}
               </h5>
 
               {/* Divider - Responsive margin */}
@@ -125,9 +125,9 @@ const Product = () => {
         </div>
 
         {/* Similar Products Section */}
-        <div className="w-full mt-6 sm:mt-8 md:mt-10">
+        {/* <div className="w-full mt-6 sm:mt-8 md:mt-10">
           <SimilarProducts />
-        </div>
+        </div> */}
       </div>
 
       <Fotter />

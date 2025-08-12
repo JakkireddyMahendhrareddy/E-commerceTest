@@ -6,7 +6,7 @@ const Logout = ({ setIsMenuOpen }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log("Logout button clicked");
+    console.log("Logouts button clicked");
 
     // Close mobile menu if it's open
     if (setIsMenuOpen) {
