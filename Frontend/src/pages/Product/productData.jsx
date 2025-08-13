@@ -27,39 +27,65 @@ const ProductsData = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(API_ROUTES.PRODUCT.GET_PRODUCTS);
-        const data = await response.json();
-        console.log("API Response Data:", data.products);
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await fetch(API_ROUTES.PRODUCT.GET_PRODUCTS);
+  //       const data = await response.json();
+  //       console.log("API Response Data:", data.products);
 
-        let products = [];
-        if (data.products) {
-          products = data.products;
-        } else if (Array.isArray(data)) {
-          products = data;
-        }
+  //       let products = [];
+  //       if (data.products) {
+  //         products = data.products;
+  //       } else if (Array.isArray(data)) {
+  //         products = data;
+  //       }
 
-        setAllProducts(products);
-        setOriginalProducts(products); // Store original products
+  //       setAllProducts(products);
+  //       setOriginalProducts(products); // Store original products
 
-        let keyword = "";
-        if (data.products?.category) {
-          keyword = data.products?.category;
-        } else if (data.products?.name) {
-          keyword = data.products?.name;
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setAllProducts([]);
-        setOriginalProducts([]);
+  //       let keyword = "";
+  //       if (data.products?.category) {
+  //         keyword = data.products?.category;
+  //       } else if (data.products?.name) {
+  //         keyword = data.products?.name;
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //       setAllProducts([]);
+  //       setOriginalProducts([]);
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, []);
+
+  // Debounced search function
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(API_ROUTES.PRODUCT.GET_PRODUCTS);
+      const data = await response.json();
+      console.log("API Response Data:", data.products);
+
+      let products = [];
+      if (data.products) {
+        products = data.products;
+      } else if (Array.isArray(data)) {
+        products = data;
       }
-    };
+
+      setAllProducts(products);
+      setOriginalProducts(products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setAllProducts([]);
+      setOriginalProducts([]);
+    }
+  };
+
+  useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Debounced search function
   const debounce = (func, delay) => {
     let timeoutId;
     return (...args) => {
@@ -202,7 +228,6 @@ const ProductsData = () => {
 
   return (
     <div className="flex flex-col gap-5 px-2 sm:px-4 lg:px-6">
-      {/* Header Section - Responsive */}
       <div className="flex flex-col bg-gray-200 shadow p-3 sm:flex-row justify-between items-center sm:items-center gap-4 mb-10 sm:gap-0">
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 tracking-normal">
           All Products
@@ -240,7 +265,7 @@ const ProductsData = () => {
         <button
           type="button"
           onClick={openAddModal}
-          className="self-start inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold tracking-widest text-white cursor-pointer bg-red-700 hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 border border-blue-200 hover:border-blue-600 hover:shadow-md transform hover:scale-105 hover:shadow-blue-400/50 animate-pulse"
+          className="self-start inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-bold tracking-widest text-white cursor-pointer bg-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 border border-blue-200 hover:border-blue-600 hover:shadow-md transform hover:scale-105 hover:shadow-blue-400/50 animate-pulse"
         >
           Add Product
         </button>
@@ -269,11 +294,13 @@ const ProductsData = () => {
           <div key={each._id} className="list-none">
             <div className="w-full rounded-2xl mb-3 overflow-hidden shadow-lg bg-white flex flex-col h-full transition-transform duration-200 hover:scale-105">
               <div className="relative">
-                <img
-                  className="w-full h-40 sm:h-44 md:h-48 lg:h-52 object-cover"
-                  src={each.image}
-                  alt={each.name}
-                />
+                <Link to={`${each._id}`}>
+                  <img
+                    className="w-full h-40 sm:h-44 md:h-48 lg:h-52 object-cover"
+                    src={each.image}
+                    alt={each.name}
+                  />
+                </Link>
                 {/* Category Badge */}
                 <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium uppercase px-2 sm:px-3 py-1 rounded shadow-md">
                   {each.category}
@@ -288,7 +315,7 @@ const ProductsData = () => {
                   </h5>
                   <Link
                     to={`${each._id}`}
-                    className="self-start inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold text-red-600 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 border border-blue-200 hover:border-blue-600 hover:shadow-md transform hover:scale-105 hover:shadow-blue-400/50 animate-pulse"
+                    className="self-start inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold bg-blue-600 text-white hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 border border-blue-200 hover:border-blue-600 hover:shadow-md transform hover:scale-105 hover:shadow-blue-400/50 animate-pulse"
                   >
                     Check
                     <FaArrowRight className="transition-transform text-black duration-300 group-hover:translate-x-1" />

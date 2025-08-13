@@ -3,7 +3,6 @@ import { FaStar } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Fotter from "../../components/Fotter";
-import ProductValue from "./productValue";
 import {
   API_ROUTES,
   errorViewToastNotificationSettings,
@@ -174,8 +173,6 @@ const Product = () => {
               </h5>
 
               <hr className="bg-gray-100 border-1 my-3 mt-10 mb-5" />
-
-              <ProductValue />
 
               <button
                 onClick={() => handleAddToCart(singleProduct._id)}

@@ -76,7 +76,7 @@ const Fotter = () => {
             <ul className="space-y-2 text-sm">
               <li>Email: support@nxttrendz.com</li>
               <li>Phone: +91 98765 43210</li>
-              <li>Address: Mumbai, India</li>
+              <li>Address: Hyderabad, India</li>
             </ul>
           </div>
         </div>

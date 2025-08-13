@@ -1,6 +1,6 @@
 // export const BASE_URL = import.meta.env.VITE_API_URL;
-// export const BASE_URL = "https://e-commercebackend-1-k8yl.onrender.com";
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "https://e-commercebackend-1-k8yl.onrender.com";
+//export const BASE_URL = "http://localhost:5000";
 
 export const API_ROUTES = {
   USERS: {
@@ -19,6 +19,8 @@ export const API_ROUTES = {
   CART: {
     ADD_CART: `${BASE_URL}/api/cart/add`,
     GET_CARTS: `${BASE_URL}/api/cart/all`,
+    DELETE_PRODUCTS: `${BASE_URL}/api/cart/delete/all`,
+    DELETE_PRODUCT: `${BASE_URL}/api/cart/delete`,
   },
   IMAGE_UPLOAD: {
     SINGLE_IMAGE: `${BASE_URL}/api/upload`,
