@@ -7,7 +7,7 @@ import Cart from "./pages/Cart/cart";
 import Product from "./pages/Product/product";
 import Login from "./pages/Auth/login";
 import Register from "./pages/Auth/register";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/protectedRoute";
 
 function App() {
   return (
