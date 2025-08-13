@@ -11,9 +11,10 @@ export const API_ROUTES = {
     CREATE_PRODUCT: `${BASE_URL}/api/product/create`,
     GET_PRODUCTS: `${BASE_URL}/api/product/all`,
     GET_PRODUCT: `${BASE_URL}/api/product`,
-
     UPDATE_PRODUCT: `${BASE_URL}/api/product/update`,
     DELETE_PRODUCT: `${BASE_URL}/api/product/delete`,
+    CATEGORY_PRODUCTS: `${BASE_URL}/api/product/category`,
+    SEARCH_PRODUCTS: `${BASE_URL}/api/product/search`,
   },
   IMAGE_UPLOAD: {
     SINGLE_IMAGE: `${BASE_URL}/api/upload`,

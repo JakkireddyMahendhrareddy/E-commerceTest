@@ -1,48 +1,89 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { FaStar } from "react-icons/fa6";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Fotter from "../../components/Fotter";
-// import { eachProduct } from "./prodctDummyData";
 import ProductValue from "./productValue";
-// import SimilarProducts from "./similarProducts";
-import { CartContext } from "../Cart/cartContext";
+import {
+  API_ROUTES,
+  errorViewToastNotificationSettings,
+} from "../../utils/apiRoutes";
+import { toast } from "react-toastify";
+import SimilarProducts from "./similarProducts";
 
-const Product = ({ singleProduct }) => {
-  // const id = useParams();
-  const { addToCart } = React.useContext(CartContext);
+const Product = () => {
+  const { id } = useParams();
+  const [singleProduct, setSingleProduct] = useState(null);
+  const [similar, setSimilar] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const location = useLocation();
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`${API_ROUTES.PRODUCT.GET_PRODUCT}/${id}`);
+        const data = await res.json();
+        setSingleProduct(data.product);
 
-  // const [product, setProduct] = React.useState(location.state?.product || null);
+        // After setting the single product, fetch similar products by category
+        if (data.product?.category) {
+          fetchSimilarProducts(data.product.category);
+        }
+      } catch (error) {
+        console.error("Error showing product:", error);
+        toast.error(
+          error?.message || "Something went wrong",
+          errorViewToastNotificationSettings
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // React.useEffect(() => {
-  //   if (!product) {
-  //     const found = eachProduct.find((p) => p.id === id);
-  //     setProduct(found);
-  //   }
-  // }, [id, product]);
+    const fetchSimilarProducts = async (category) => {
+      try {
+        const res = await fetch(
+          `${API_ROUTES.PRODUCT.CATEGORY_PRODUCTS}/${category}`
+        );
+        const data = await res.json();
+        setSimilar(data.products || []); // assuming your API returns { products: [...] }
+      } catch (error) {
+        console.error("Error fetching similar products:", error);
+      }
+    };
 
-  const handleAddToCart = () => {
-    addToCart(singleProduct);
-  };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <p className="text-center mt-10">Loading product...</p>
+        <Fotter />
+      </>
+    );
+  }
+
+  if (!singleProduct) {
+    return (
+      <>
+        <Navbar />
+        <p className="text-center mt-10">Product not found.</p>
+        <Fotter />
+      </>
+    );
+  }
 
   return (
-    <>
+    <div>
       <Navbar />
-
-      {/* Main Container - Responsive padding */}
-      <div className="flex flex-col justify-center mb-5 items-start px-4 sm:px-6 md:px-8 lg:px-10 mt-5 w-full">
-        {/* Product Details Container - Responsive padding and gap */}
-        <div className="flex flex-col justify-center items-start px-2 sm:px-4 md:px-6 lg:px-10 mt-5 w-full gap-6 sm:gap-8 md:gap-10">
-          {/* Page Title - Responsive text size */}
+      <div className="flex flex-col  justify-center  items-start px-4 sm:px-6 md:px-8 lg:px-10 mt-5 w-full">
+        <div className="flex flex-col justify-center items-start px-2 sm:px-4 md:px-6 lg:px-10 mt-5 w-full gap-6">
           <h5 className="text-xl sm:text-2xl md:text-3xl font-bold">
             Product Details
           </h5>
 
-          {/* Product Content - Responsive layout */}
-          <div className="flex flex-col lg:flex-row justify-center items-start gap-6 sm:gap-8 md:gap-10 w-full">
-            {/* Product Image - Responsive dimensions */}
+          <div className="flex flex-col lg:flex-row gap-6 w-full">
             <div className="w-full lg:w-[30vw] h-64 sm:h-80 md:h-96 lg:h-[60vh] flex-shrink-0">
               <img
                 src={singleProduct.image}
@@ -51,71 +92,59 @@ const Product = ({ singleProduct }) => {
               />
             </div>
 
-            {/* Product Details - Responsive width and spacing */}
-            <div className="space-y-3 sm:space-y-4 md:space-y-5 w-full lg:w-[50vw] lg:h-[70vh]">
-              {/* Product Name - Responsive text size */}
+            <div className="space-y-3 w-full lg:w-[50vw]">
               <h5 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2">
                 {singleProduct.name}
               </h5>
-
-              {/* Product Price - Responsive text size */}
+              <p className="text-gray-700 text-xs sm:text-sm mb-4 leading-5">
+                {singleProduct.productDetails}
+              </p>
               <h5 className="text-base sm:text-lg font-semibold mb-2">
                 Rs: {singleProduct.price}/-
               </h5>
 
-              {/* Rating and Reviews - Responsive layout */}
-              <div className="flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2 sm:gap-3">
-                <button className="inline-flex items-center gap-1 px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-blue-600 transition">
-                  {singleProduct.rating}
-                  <FaStar className="w-3 h-3 sm:w-4 sm:h-4" />
-                </button>
-                <h5 className="text-base sm:text-lg font-semibold">
-                  {singleProduct.reviews}
-                  {"   "}
-                  <span className="font-normal text-red-500">Reviews</span>
-                </h5>
-              </div>
-
-              {/* Product Description - Responsive text size */}
-              <p className="text-gray-700 text-xs sm:text-sm mb-4 leading-5 sm:leading-6 tracking-wide">
-                {singleProduct.extraInfo}
-              </p>
-
-              {/* Product Details - Responsive text sizes */}
-              <h5 className="text-sm sm:text-base md:text-lg font-small">
-                <span className="text-base sm:text-lg md:text-xl font-semibold">
-                  Available:{" "}
+              <button className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-blue-600 transition">
+                {singleProduct.rating}
+                <FaStar className="w-3 h-3 sm:w-4 sm:h-4" />
+              </button>
+              <h5 className="text-sm sm:text-base md:text-lg">
+                <span className="font-semibold">
+                  Reviews:{" "}
+                  <span className="font-normal text-red-500">100 </span>
                 </span>
                 {singleProduct.stock}
               </h5>
 
-              <h5 className="text-sm sm:text-base md:text-lg font-small">
-                <span className="text-base sm:text-lg md:text-xl font-semibold">
+              <h5 className="text-sm sm:text-base md:text-lg">
+                <span className="font-semibold">
+                  Available:{" "}
+                  <span className="font-normal text-red-500">10 </span>
+                </span>
+                {singleProduct.stock}
+              </h5>
+              <h5 className="text-sm sm:text-base md:text-lg">
+                <span className="font-semibold">
                   Brand:{" "}
+                  <span className="font-normal text-red-500">All Brands </span>
                 </span>
                 {singleProduct.brand}
               </h5>
-
-              <h5 className="text-sm sm:text-base md:text-lg font-small">
-                <span className="text-base sm:text-lg md:text-xl font-semibold">
-                  Category:{" "}
+              <h5 className="text-sm sm:text-base font-semibold md:text-lg">
+                Category:{" "}
+                <span className="font-normal text-red-500">
+                  {" "}
+                  {singleProduct.category}
                 </span>
-                {singleProduct.category}
               </h5>
 
-              {/* Divider - Responsive margin */}
-              <hr className="bg-gray-100 border-1 mb-3 sm:mb-4 md:mb-5 mt-2 sm:mt-3" />
+              <hr className="bg-gray-100 border-1 my-3 mt-10 mb-5" />
 
-              {/* Product Value Component */}
-              <div className="w-full">
-                <ProductValue />
-              </div>
+              <ProductValue />
 
-              {/* Add to Cart Button - Responsive sizing */}
               <Link to="/cart">
                 <button
-                  onClick={handleAddToCart}
-                  className="inline-flex cursor-pointer items-center gap-1 px-4 sm:px-5 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition w-full sm:w-auto justify-center sm:justify-start"
+                  onClick={() => console.log("Add to cart clicked")}
+                  className="inline-flex cursor-pointer mt-3 items-center gap-1 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition w-full sm:w-auto"
                 >
                   Add to Cart
                 </button>
@@ -123,15 +152,11 @@ const Product = ({ singleProduct }) => {
             </div>
           </div>
         </div>
-
-        {/* Similar Products Section */}
-        {/* <div className="w-full mt-6 sm:mt-8 md:mt-10">
-          <SimilarProducts />
-        </div> */}
+        <SimilarProducts similar={similar} />
       </div>
 
       <Fotter />
-    </>
+    </div>
   );
 };
 
