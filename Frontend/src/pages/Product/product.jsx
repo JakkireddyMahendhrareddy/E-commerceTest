@@ -74,6 +74,42 @@ const Product = () => {
     );
   }
 
+  const handleAddToCart = async (productId) => {
+    try {
+      const userId = localStorage.getItem("userId") || null; // or get from context/auth state
+      const quantity = 1; // You can make this dynamic
+
+      console.log(userId, productId, quantity, "0000000000");
+
+      if (!userId) {
+        toast.error(
+          "Please login to add items to cart",
+          errorViewToastNotificationSettings
+        );
+        return;
+      }
+
+      const res = await fetch(`${API_ROUTES.CART.ADD_CART}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, productId, quantity }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success(data.message || "Added to cart successfully");
+      } else {
+        toast.error(data.message || "Failed to add to cart");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Something went wrong", errorViewToastNotificationSettings);
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -141,14 +177,12 @@ const Product = () => {
 
               <ProductValue />
 
-              <Link to="/cart">
-                <button
-                  onClick={() => console.log("Add to cart clicked")}
-                  className="inline-flex cursor-pointer mt-3 items-center gap-1 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition w-full sm:w-auto"
-                >
-                  Add to Cart
-                </button>
-              </Link>
+              <button
+                onClick={() => handleAddToCart(singleProduct._id)}
+                className="inline-flex cursor-pointer mt-3 items-center gap-1 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600 transition w-full sm:w-auto"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         </div>

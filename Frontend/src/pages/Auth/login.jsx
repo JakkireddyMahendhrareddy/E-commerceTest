@@ -64,9 +64,11 @@ const Login = () => {
       console.log("Response data:", data);
 
       if (response.ok) {
-        const { message, jwtToken } = data;
+        const { message, jwtToken, userId } = data;
         toast.success(message, loginSuccessToastNotificationSettings);
         Cookies.set("jwtToken", jwtToken, { expires: 0.25 });
+        localStorage.setItem("userId", userId);
+
         navigate("/");
       } else {
         console.error("Login failed:", data);

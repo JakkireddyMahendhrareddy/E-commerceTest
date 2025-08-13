@@ -16,6 +16,10 @@ export const API_ROUTES = {
     CATEGORY_PRODUCTS: `${BASE_URL}/api/product/category`,
     SEARCH_PRODUCTS: `${BASE_URL}/api/product/search`,
   },
+  CART: {
+    ADD_CART: `${BASE_URL}/api/cart/add`,
+    GET_CARTS: `${BASE_URL}/api/cart/all`,
+  },
   IMAGE_UPLOAD: {
     SINGLE_IMAGE: `${BASE_URL}/api/upload`,
   },

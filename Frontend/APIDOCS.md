@@ -13,3 +13,8 @@ http://localhost:5000/api/product/delete/all; (delete all products)
 http://localhost:5000/api/product/update/:id; (update product by id )
 
 http://localhost:5000/api/product/search/:keyword; (search for a keyword in the database)
+
+Carts
+http://localhost:5000/api/cart/add; (add to cart)
+
+http://localhost:5000/api/cart/all; (fetch cart data)
