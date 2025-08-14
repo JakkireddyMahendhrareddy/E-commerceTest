@@ -26,6 +26,8 @@ const ProductsData = () => {
   const [originalProducts, setOriginalProducts] = useState([]); // Store original products
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   // useEffect(() => {
   //   const fetchProducts = async () => {
@@ -61,24 +63,47 @@ const ProductsData = () => {
 
   // Debounced search function
   const fetchProducts = async () => {
+    setIsLoading(true);
+    setHasError(false);
+    
     try {
       const response = await fetch(API_ROUTES.PRODUCT.GET_PRODUCTS);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
-      console.log("API Response Data:", data.products);
+      console.log("API Response Data:", data);
 
       let products = [];
-      if (data.products) {
+      if (data && data.products && Array.isArray(data.products)) {
         products = data.products;
       } else if (Array.isArray(data)) {
         products = data;
+      } else {
+        console.warn("Unexpected API response format:", data);
+        products = [];
       }
 
-      setAllProducts(products);
-      setOriginalProducts(products);
+      // Filter out invalid products
+      const validProducts = products.filter(product => 
+        product && product._id && product.name && product.category
+      );
+
+      setAllProducts(validProducts);
+      setOriginalProducts(validProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setHasError(true);
+      toast.error(
+        "Failed to load products. Please try again later.",
+        errorViewToastNotificationSettings
+      );
       setAllProducts([]);
       setOriginalProducts([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -108,17 +133,33 @@ const ProductsData = () => {
         const response = await fetch(
           `${API_ROUTES.PRODUCT.SEARCH_PRODUCTS}/${encodeURIComponent(term)}`
         );
+        
+        if (!response.ok) {
+          throw new Error(`Search failed: ${response.status}`);
+        }
+        
         const data = await response.json();
         console.log("Search API Response Data:", data);
-        setAllProducts((data.products || []).filter((p) => p && p._id));
+        
+        if (data && data.products && Array.isArray(data.products)) {
+          const validProducts = data.products.filter((p) => p && p._id);
+          setAllProducts(validProducts);
+        } else {
+          setAllProducts([]);
+        }
       } catch (error) {
         console.error("Error searching for products:", error.message);
+        toast.warning(
+          "Search failed. Showing filtered results from available products.",
+          errorViewToastNotificationSettings
+        );
         // On error, fall back to client-side filtering
         const filteredProducts = originalProducts.filter(
           (product) =>
-            product.name.toLowerCase().includes(term.toLowerCase()) ||
-            product.category.toLowerCase().includes(term.toLowerCase()) ||
-            product.productDetails.toLowerCase().includes(term.toLowerCase())
+            product && product.name && product.category && product.productDetails &&
+            (product.name.toLowerCase().includes(term.toLowerCase()) ||
+             product.category.toLowerCase().includes(term.toLowerCase()) ||
+             product.productDetails.toLowerCase().includes(term.toLowerCase()))
         );
         setAllProducts(filteredProducts);
       } finally {
@@ -289,87 +330,111 @@ const ProductsData = () => {
       )} */}
 
       {/* Products Grid - Fully Responsive */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 sm:gap-6">
-        {allProducts?.map((each, index) => (
-          <div key={each._id} className="list-none">
-            <div className="w-full rounded-2xl mb-3 overflow-hidden shadow-lg bg-white flex flex-col h-full transition-transform duration-200 hover:scale-105">
-              <div className="relative">
-                <Link to={`${each._id}`}>
-                  <img
-                    className="w-full h-40 sm:h-44 md:h-48 lg:h-52 object-cover"
-                    src={each.image}
-                    alt={each.name}
-                  />
-                </Link>
-                {/* Category Badge */}
-                <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium uppercase px-2 sm:px-3 py-1 rounded shadow-md">
-                  {each.category}
-                </span>
-              </div>
-
-              <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between">
-                {/* Product Name and View Details */}
-                <div className="flex flex-row justify-between gap-2 mb-3">
-                  <h5 className="text-sm sm:text-base md:text-lg font-semibold line-clamp-2">
-                    {each.name}
-                  </h5>
-                  <Link
-                    to={`${each._id}`}
-                    className="self-start inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold bg-blue-600 text-white hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 border border-blue-200 hover:border-blue-600 hover:shadow-md transform hover:scale-105 hover:shadow-blue-400/50 animate-pulse"
-                  >
-                    Check
-                    <FaArrowRight className="transition-transform text-black duration-300 group-hover:translate-x-1" />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+      ) : hasError ? (
+        <div className="text-center py-20">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">Failed to load products</h3>
+          <p className="text-gray-600 mb-4">Something went wrong while fetching products.</p>
+          <button
+            onClick={fetchProducts}
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 sm:gap-6">
+          {allProducts?.map((each, index) => (
+            <div key={each._id} className="list-none">
+              <div className="w-full rounded-2xl mb-3 overflow-hidden shadow-lg bg-white flex flex-col h-full transition-transform duration-200 hover:scale-105">
+                <div className="relative">
+                  <Link to={`${each._id}`}>
+                    <img
+                      className="w-full h-40 sm:h-44 md:h-48 lg:h-52 object-cover"
+                      src={each.image}
+                      alt={each.name}
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                      }}
+                    />
                   </Link>
+                  {/* Category Badge */}
+                  <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium uppercase px-2 sm:px-3 py-1 rounded shadow-md">
+                    {each.category}
+                  </span>
                 </div>
 
-                {/* Product Description */}
-                <p className="text-gray-500 text-xs sm:text-sm mb-3 leading-relaxed line-clamp-2 flex-grow">
-                  {each.productDetails}
-                </p>
+                <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between">
+                  {/* Product Name and View Details */}
+                  <div className="flex flex-row justify-between gap-2 mb-3">
+                    <h5 className="text-sm sm:text-base md:text-lg font-semibold line-clamp-2">
+                      {each.name}
+                    </h5>
+                    <Link
+                      to={`${each._id}`}
+                      className="self-start inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold bg-blue-600 text-white hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 border border-blue-200 hover:border-blue-600 hover:shadow-md transform hover:scale-105 hover:shadow-blue-400/50 animate-pulse"
+                    >
+                      Check
+                      <FaArrowRight className="transition-transform text-black duration-300 group-hover:translate-x-1" />
+                    </Link>
+                  </div>
 
-                {/* Bottom Section */}
-                <div className="mt-auto">
-                  {/* Price */}
-                  <h5 className="text-sm sm:text-base md:text-lg font-semibold ">
-                    Rs:{each.price}/-
-                  </h5>
+                  {/* Product Description */}
+                  <p className="text-gray-500 text-xs sm:text-sm mb-3 leading-relaxed line-clamp-2 flex-grow">
+                    {each.productDetails}
+                  </p>
 
-                  {/* Rating and Actions */}
-                  <div className="flex items-center justify-between mt-4">
-                    <button className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-blue-600 transition">
-                      {each.rating}
-                      <FaStar />
-                    </button>
+                  {/* Bottom Section */}
+                  <div className="mt-auto">
+                    {/* Price */}
+                    <h5 className="text-sm sm:text-base md:text-lg font-semibold ">
+                      Rs:{each.price}/-
+                    </h5>
 
-                    <div className="flex items-center gap-2">
-                      {/* Edit Button */}
-                      <button
-                        onClick={() => handleEdit(each)}
-                        className="p-2 rounded-md cursor-pointer text-green-600 hover:bg-green-100 transition-colors duration-200"
-                        title="Edit"
-                      >
-                        <FaEdit className="w-5 h-5" />
+                    {/* Rating and Actions */}
+                    <div className="flex items-center justify-between mt-4">
+                      <button className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 bg-blue-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-blue-600 transition">
+                        {each.rating}
+                        <FaStar />
                       </button>
 
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => handleDelete(each._id)}
-                        className="p-2 rounded-md cursor-pointer text-red-600 hover:bg-red-100 transition-colors duration-200"
-                        title="Delete"
-                      >
-                        <FaTrash className="w-5 h-5" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        {/* Edit Button */}
+                        <button
+                          onClick={() => handleEdit(each)}
+                          className="p-2 rounded-md cursor-pointer text-green-600 hover:bg-green-100 transition-colors duration-200"
+                          title="Edit"
+                        >
+                          <FaEdit className="w-5 h-5" />
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => handleDelete(each._id)}
+                          className="p-2 rounded-md cursor-pointer text-red-600 hover:bg-red-100 transition-colors duration-200"
+                          title="Delete"
+                        >
+                          <FaTrash className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* No Products Found */}
-      {allProducts.length === 0 && !isSearching && (
+      {!isLoading && !hasError && allProducts.length === 0 && !isSearching && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             {searchTerm

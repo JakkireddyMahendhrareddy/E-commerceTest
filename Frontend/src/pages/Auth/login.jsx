@@ -11,6 +11,11 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import validator from "validator";
+import {
+  logAPIConfig,
+  testAPIEndpoints,
+  testBackendHealth,
+} from "../../utils/apiTest";
 
 const Login = () => {
   const [userDetails, setUserDetails] = useState({ email: "", password: "" });
@@ -21,6 +26,10 @@ const Login = () => {
   useEffect(() => {
     // Check if user just logged out
     console.log(API_ROUTES.USERS.LOGIN, "llllllllllllllll");
+
+    // Log API configuration for debugging
+    logAPIConfig();
+
     const justLoggedOut = localStorage.getItem("justLoggedOut");
 
     if (justLoggedOut === "true") {
@@ -51,38 +60,85 @@ const Login = () => {
 
   const loginUser = async (userCredentials) => {
     try {
+      console.log("Attempting login to:", API_ROUTES.USERS.LOGIN);
+      console.log("User credentials:", {
+        email: userCredentials.email,
+        password: "***",
+      });
+
       const response = await fetch(API_ROUTES.USERS.LOGIN, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(userCredentials),
+        mode: "cors",
+        credentials: "omit",
       });
 
       console.log("Response status:", response.status);
       console.log("Response ok:", response.ok);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Server error response:", errorData);
+        throw new Error(
+          `HTTP ${response.status}: ${errorData.message || "Login failed"}`
+        );
+      }
 
       const data = await response.json();
       console.log("Response data:", data);
 
-      if (response.ok) {
-        const { message, jwtToken, userId } = data;
-        toast.success(message, loginSuccessToastNotificationSettings);
-        Cookies.set("jwtToken", jwtToken, { expires: 0.25 });
-        localStorage.setItem("userId", userId);
+      const { message, jwtToken, userId } = data;
 
-        navigate("/");
-      } else {
-        console.error("Login failed:", data);
-        toast.error(
-          data.message || "Login failed",
-          errorViewToastNotificationSettings
-        );
+      if (!jwtToken) {
+        throw new Error("No authentication token received");
       }
+
+      toast.success(message, loginSuccessToastNotificationSettings);
+      Cookies.set("jwtToken", jwtToken, { expires: 0.25 });
+      localStorage.setItem("userId", userId);
+
+      navigate("/");
     } catch (error) {
-      console.error("Login error:", error);
-      toast.warning(
-        "Something went wrong: " + error.message,
-        toastNotificationSettings
-      );
+      console.error("Login error details:", {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      });
+
+      let errorMessage = "Login failed. Please try again.";
+      let errorType = "error";
+
+      if (error.message.includes("Failed to fetch")) {
+        errorMessage =
+          "Cannot connect to server. The backend might be down or sleeping.";
+        errorType = "warning";
+      } else if (error.message.includes("NetworkError")) {
+        errorMessage = "Network error. Please check your internet connection.";
+        errorType = "error";
+      } else if (error.message.includes("HTTP")) {
+        errorMessage = error.message;
+        errorType = "error";
+      } else if (error.message.includes("No authentication token")) {
+        errorMessage = "Invalid response from server. Please try again.";
+        errorType = "error";
+      } else if (error.message.includes("CORS")) {
+        errorMessage = "CORS error. Backend server configuration issue.";
+        errorType = "warning";
+      }
+
+      if (errorType === "warning") {
+        toast.warning(errorMessage, errorViewToastNotificationSettings);
+      } else {
+        toast.error(errorMessage, errorViewToastNotificationSettings);
+      }
     }
   };
 
@@ -183,6 +239,52 @@ const Login = () => {
               </button>
             </div>
           </form>
+
+          {/* Debug Section - Only in Development */}
+          {import.meta.env.DEV && (
+            <div className="mt-4 p-3 bg-gray-100 rounded-lg">
+              <h4 className="text-sm font-semibold mb-2">Debug Tools</h4>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={async () => {
+                    const results = await testAPIEndpoints();
+                    console.log("API Test Results:", results);
+                    toast.info("Check console for API test results", {
+                      autoClose: 3000,
+                    });
+                  }}
+                  className="text-xs bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+                >
+                  Test API
+                </button>
+                <button
+                  onClick={() => {
+                    logAPIConfig();
+                    toast.info("API config logged to console", {
+                      autoClose: 2000,
+                    });
+                  }}
+                  className="text-xs bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+                >
+                  Log Config
+                </button>
+                <button
+                  onClick={async () => {
+                    const health = await testBackendHealth();
+                    toast.info(
+                      "Backend health check completed. Check console.",
+                      {
+                        autoClose: 4000,
+                      }
+                    );
+                  }}
+                  className="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                >
+                  Health Check
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Register Link */}
           <p className="mt-4 text-xs md:text-sm text-center text-gray-600">
