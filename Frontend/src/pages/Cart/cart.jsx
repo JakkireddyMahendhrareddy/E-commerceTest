@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { MdCancel } from "react-icons/md";
 import Cookies from "js-cookie";
-
+import { Link } from "react-router-dom";
 import {
   API_ROUTES,
   errorViewToastNotificationSettings,
+  loginSuccessToastNotificationSettings,
 } from "../../utils/apiRoutes";
 import { toast } from "react-toastify";
 import Fotter from "../../components/Fotter";
@@ -132,31 +133,31 @@ const Cart = () => {
     }
   };
 
-  const updateCartItemQuantity = async (itemId, quantity) => {
+  const updateCartItemQuantity = async (itemId, quantity, index) => {
     try {
       const token = Cookies.get("jwtToken");
-      const response = await fetch(`${API_ROUTES.CART.UPDATE_QUANTITY}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          userId,
-          itemId,
-          quantity,
-        }),
-      });
+      const productId = cart[index]?.productId?._id;
+
+      const response = await fetch(
+        `${API_ROUTES.CART.UPDATE_CART_QUANTITY}/${userId}/${productId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+          body: JSON.stringify({ quantity }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to update quantity on server");
       }
 
       const result = await response.json();
-      console.log("Quantity updated successfully:", result);
+      toast.success(result.message, loginSuccessToastNotificationSettings);
     } catch (err) {
       console.error("Error updating cart item quantity:", err);
-      throw err; // Re-throw to handle in calling function
     }
   };
 
@@ -164,7 +165,7 @@ const Cart = () => {
     try {
       const token = Cookies.get("jwtToken");
       const itemId = cart[index].id;
-      const productId = cart[index]?.productId?._id; // Get product's ID from object
+      const productId = cart[index]?.productId?._id;
 
       const response = await fetch(
         `${API_ROUTES.CART.DELETE_PRODUCT}/${userId}/${productId}`,
@@ -184,14 +185,15 @@ const Cart = () => {
       if (!response.ok) {
         throw new Error("Failed to remove item");
       }
-
+      const data = await response.json();
+      const { message } = data;
       // Update local state
       const newCart = cart.filter((_, i) => i !== index);
       const newQuantities = quantities.filter((_, i) => i !== index);
       setCart(newCart);
       setQuantities(newQuantities);
 
-      toast.success("Item removed from cart");
+      toast.success(message, loginSuccessToastNotificationSettings);
     } catch (err) {
       console.error("Error removing item:", err);
       toast.error("Failed to remove item", errorViewToastNotificationSettings);
@@ -213,13 +215,16 @@ const Cart = () => {
       );
       console.log(response);
 
+      const data = await response.json();
+      const { message } = data;
+
       if (!response.ok) {
         throw new Error("Failed to clear cart");
       }
 
       setCart([]);
       setQuantities([]);
-      toast.success("Cart cleared successfully");
+      toast.success(message, loginSuccessToastNotificationSettings);
     } catch (err) {
       console.error("Error clearing cart:", err);
       toast.error("Failed to clear cart", errorViewToastNotificationSettings);
@@ -266,17 +271,19 @@ const Cart = () => {
         <div className="flex flex-col justify-center items-center w-full max-w-7xl gap-3 md:gap-5">
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-3 sm:gap-0">
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center sm:text-left">
-              My Cart
-            </h1>
-
             {cart.length > 0 && (
-              <button
-                onClick={handleDeleteAll}
-                className="bg-red-500 hover:bg-red-600 text-xs sm:text-sm md:text-base font-semibold text-white px-3 sm:px-4 md:px-6 py-2 md:py-2.5 rounded-md cursor-pointer transition-colors duration-200 w-full sm:w-auto"
-              >
-                Remove All
-              </button>
+              <>
+                {" "}
+                <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center sm:text-left">
+                  My Cart
+                </h1>
+                <button
+                  onClick={handleDeleteAll}
+                  className="bg-blue-500 hover:bg-red-600 text-xs sm:text-sm md:text-base font-semibold text-white px-3 sm:px-4 md:px-6 py-2 md:py-2.5 rounded-md cursor-pointer transition-colors duration-200 w-full sm:w-auto"
+                >
+                  Remove All
+                </button>
+              </>
             )}
           </div>
 
@@ -316,7 +323,7 @@ const Cart = () => {
                         <button
                           onClick={() => decreaseValue(index)}
                           disabled={quantities[index] <= 1}
-                          className="inline-flex items-center justify-center border border-gray-300 px-2.5 sm:px-3 md:px-3.5 py-1.5 md:py-2 bg-white text-black text-sm md:text-base font-medium shadow-sm rounded hover:bg-gray-50 hover:border-blue-400 transition-all duration-200 min-w-[32px] md:min-w-[36px] disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex cursor-pointer items-center justify-center border border-gray-300 px-2.5 sm:px-3 md:px-3.5 py-1.5 md:py-2 bg-white text-black text-sm md:text-base font-medium shadow-sm rounded hover:bg-gray-50 hover:border-blue-400 transition-all duration-200 min-w-[32px] md:min-w-[36px] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           -
                         </button>
@@ -325,7 +332,7 @@ const Cart = () => {
                         </span>
                         <button
                           onClick={() => increaseValue(index)}
-                          className="inline-flex items-center justify-center border border-gray-300 px-2.5 sm:px-3 md:px-3.5 py-1.5 md:py-2 bg-white text-black text-sm md:text-base font-medium shadow-sm rounded hover:bg-gray-50 hover:border-blue-400 transition-all duration-200 min-w-[32px] md:min-w-[36px]"
+                          className="inline-flex cursor-pointer items-center justify-center border border-gray-300 px-2.5 sm:px-3 md:px-3.5 py-1.5 md:py-2 bg-white text-black text-sm md:text-base font-medium shadow-sm rounded hover:bg-gray-50 hover:border-blue-400 transition-all duration-200 min-w-[32px] md:min-w-[36px]"
                         >
                           +
                         </button>
@@ -363,24 +370,29 @@ const Cart = () => {
                     <p className="text-xs sm:text-sm md:text-base text-gray-600 mt-1">
                       {cart.length} item{cart.length !== 1 ? "s" : ""} in Cart
                     </p>
+                    <Link to="/shipping">
+                      <button className="w-full cursor-pointer py-2.5 md:py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm sm:text-base md:text-lg font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                        Checkout
+                      </button>
+                    </Link>
                   </div>
-                  <button className="w-full py-2.5 md:py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm sm:text-base md:text-lg font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
-                    Checkout
-                  </button>
                 </div>
               </div>
             </>
           ) : (
             /* Empty Cart State */
-            <div className="flex flex-col items-center justify-center py-12 md:py-16">
-              <div className="text-center">
-                <h2 className="text-lg md:text-xl font-semibold text-gray-600 mb-2">
-                  Your cart is empty
-                </h2>
-                <p className="text-sm md:text-base text-gray-500">
-                  Add some products to get started
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center h-screen text-center">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
+                alt="Empty cart"
+                className="w-32 h-32 mb-4"
+              />
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-blue-600">
+                Your cart is empty.
+              </h1>
+              <p className="mt-2 text-sm md:text-base text-gray-500">
+                Add some products to get started
+              </p>
             </div>
           )}
         </div>

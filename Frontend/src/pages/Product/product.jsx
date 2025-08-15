@@ -6,6 +6,7 @@ import Fotter from "../../components/Fotter";
 import {
   API_ROUTES,
   errorViewToastNotificationSettings,
+  loginSuccessToastNotificationSettings,
 } from "../../utils/apiRoutes";
 import { toast } from "react-toastify";
 import SimilarProducts from "./similarProducts";
@@ -99,7 +100,7 @@ const Product = () => {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(data.message || "Added to cart successfully");
+        toast.success(data.message, loginSuccessToastNotificationSettings);
       } else {
         toast.error(data.message || "Failed to add to cart");
       }

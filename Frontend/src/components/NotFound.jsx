@@ -8,28 +8,7 @@ const NotFound = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
         <div className="text-6xl mb-4">🚫</div>
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Page Not Found
-        </h1>
-        <p className="text-gray-600 mb-4">
-          The page you're looking for doesn't exist.
-        </p>
-
-        {/* Debug Information */}
-        <div className="bg-gray-50 p-4 rounded-lg mb-6 text-left">
-          <h3 className="font-semibold text-sm text-gray-700 mb-2">
-            Debug Info:
-          </h3>
-          <p className="text-xs text-gray-600 mb-1">
-            <strong>Current URL:</strong> {location.pathname}
-          </p>
-          <p className="text-xs text-gray-600 mb-1">
-            <strong>Search:</strong> {location.search || "None"}
-          </p>
-          <p className="text-xs text-gray-600">
-            <strong>Hash:</strong> {location.hash || "None"}
-          </p>
-        </div>
+        <img src="https://assets.ccbp.in/frontend/react-js/not-found-blog-img.png" />
 
         <div className="space-y-3">
           <Link

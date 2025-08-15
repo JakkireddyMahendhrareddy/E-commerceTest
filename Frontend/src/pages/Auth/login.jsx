@@ -11,11 +11,11 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import validator from "validator";
-import {
-  logAPIConfig,
-  testAPIEndpoints,
-  testBackendHealth,
-} from "../../utils/apiTest";
+// import {
+//   logAPIConfig,
+//   testAPIEndpoints,
+//   testBackendHealth,
+// } from "../../utils/apiTest";
 
 const Login = () => {
   const [userDetails, setUserDetails] = useState({ email: "", password: "" });
@@ -28,7 +28,7 @@ const Login = () => {
     console.log(API_ROUTES.USERS.LOGIN, "llllllllllllllll");
 
     // Log API configuration for debugging
-    logAPIConfig();
+    // logAPIConfig();
 
     const justLoggedOut = localStorage.getItem("justLoggedOut");
 
@@ -73,37 +73,23 @@ const Login = () => {
           Accept: "application/json",
         },
         body: JSON.stringify(userCredentials),
-        mode: "cors",
-        credentials: "omit",
       });
 
       console.log("Response status:", response.status);
       console.log("Response ok:", response.ok);
-      console.log(
-        "Response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("Server error response:", errorData);
-        throw new Error(
-          `HTTP ${response.status}: ${errorData.message || "Login failed"}`
-        );
-      }
 
       const data = await response.json();
       console.log("Response data:", data);
 
       const { message, jwtToken, userId } = data;
 
-      if (!jwtToken) {
-        throw new Error("No authentication token received");
+      if (response.ok) {
+        toast.success(message, loginSuccessToastNotificationSettings);
+        Cookies.set("jwtToken", jwtToken, { expires: 0.25 });
+        localStorage.setItem("userId", userId);
+      } else {
+        toast.error(message, errorViewToastNotificationSettings);
       }
-
-      toast.success(message, loginSuccessToastNotificationSettings);
-      Cookies.set("jwtToken", jwtToken, { expires: 0.25 });
-      localStorage.setItem("userId", userId);
 
       navigate("/");
     } catch (error) {
@@ -112,33 +98,6 @@ const Login = () => {
         name: error.name,
         stack: error.stack,
       });
-
-      let errorMessage = "Login failed. Please try again.";
-      let errorType = "error";
-
-      if (error.message.includes("Failed to fetch")) {
-        errorMessage =
-          "Cannot connect to server. The backend might be down or sleeping.";
-        errorType = "warning";
-      } else if (error.message.includes("NetworkError")) {
-        errorMessage = "Network error. Please check your internet connection.";
-        errorType = "error";
-      } else if (error.message.includes("HTTP")) {
-        errorMessage = error.message;
-        errorType = "error";
-      } else if (error.message.includes("No authentication token")) {
-        errorMessage = "Invalid response from server. Please try again.";
-        errorType = "error";
-      } else if (error.message.includes("CORS")) {
-        errorMessage = "CORS error. Backend server configuration issue.";
-        errorType = "warning";
-      }
-
-      if (errorType === "warning") {
-        toast.warning(errorMessage, errorViewToastNotificationSettings);
-      } else {
-        toast.error(errorMessage, errorViewToastNotificationSettings);
-      }
     }
   };
 
@@ -241,7 +200,7 @@ const Login = () => {
           </form>
 
           {/* Debug Section - Only in Development */}
-          {import.meta.env.DEV && (
+          {/* {import.meta.env.DEV && (
             <div className="mt-4 p-3 bg-gray-100 rounded-lg">
               <h4 className="text-sm font-semibold mb-2">Debug Tools</h4>
               <div className="flex flex-wrap gap-2">
@@ -284,13 +243,16 @@ const Login = () => {
                 </button>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Register Link */}
           <p className="mt-4 text-xs md:text-sm text-center text-gray-600">
             Don’t have an account?{"   "}
-            <Link to="/register" className="text-blue-800 hover:underline">
-              Register
+            <Link
+              to="/register"
+              className="text-blue-800 text-xl font-bold hover:underline"
+            >
+              Sign up
             </Link>
           </p>
         </div>

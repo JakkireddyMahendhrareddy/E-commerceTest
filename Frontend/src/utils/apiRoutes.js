@@ -1,7 +1,8 @@
 // Use environment variable with fallback to production URL
-export const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://e-commercebackend-production-faf1.up.railway.app";
+export const BASE_URL = "http://localhost:5000";
+//"https://e-commercebackend-production-faf1.up.railway.app";
+//";
+// ||;
 
 export const API_ROUTES = {
   USERS: {
@@ -22,6 +23,7 @@ export const API_ROUTES = {
     GET_CARTS: `${BASE_URL}/api/cart/all`,
     DELETE_PRODUCTS: `${BASE_URL}/api/cart/delete/all`,
     DELETE_PRODUCT: `${BASE_URL}/api/cart/delete`,
+    UPDATE_CART_QUANTITY: `${BASE_URL}/api/cart/update/quantity`,
   },
   IMAGE_UPLOAD: {
     SINGLE_IMAGE: `${BASE_URL}/api/upload`,

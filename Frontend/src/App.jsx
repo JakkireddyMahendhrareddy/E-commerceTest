@@ -9,22 +9,23 @@ import Login from "./pages/Auth/login";
 import Register from "./pages/Auth/register";
 import ProtectedRoute from "./components/protectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
-import HealthCheck from "./components/HealthCheck";
-import NetworkStatus from "./components/NetworkStatus";
+// import HealthCheck from "./components/HealthCheck";
+// import NetworkStatus from "./components/NetworkStatus";
 import NotFound from "./components/NotFound";
+import Ship from "./pages/ship";
 
 function App() {
   // Debug routing information
-  console.log("🚀 App Component Rendered");
-  console.log("📍 Available Routes:", [
-    "/",
-    "/products",
-    "/products/:id",
-    "/similar-products/:id",
-    "/cart",
-    "/login",
-    "/register",
-  ]);
+  // console.log("🚀 App Component Rendered");
+  // console.log("📍 Available Routes:", [
+  //   "/",
+  //   "/products",
+  //   "/products/:id",
+  //   "/similar-products/:id",
+  //   "/cart",
+  //   "/login",
+  //   "/register",
+  // ]);
 
   return (
     <ErrorBoundary>
@@ -73,6 +74,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/shipping"
+                element={
+                  <ProtectedRoute>
+                    <Ship />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
@@ -94,8 +103,8 @@ function App() {
             />
           </div>
         </Router>
-        <HealthCheck />
-        <NetworkStatus />
+        {/* <HealthCheck />
+      <NetworkStatus /> */}
       </div>
     </ErrorBoundary>
   );

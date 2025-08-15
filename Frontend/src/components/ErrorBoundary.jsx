@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,12 +13,12 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
-    
+
     // Log error to console in development
     if (import.meta.env.DEV) {
-      console.error('Error caught by boundary:', error, errorInfo);
+      console.error("Error caught by boundary:", error, errorInfo);
     }
   }
 
@@ -31,7 +31,8 @@ class ErrorBoundary extends React.Component {
               Something went wrong
             </h1>
             <p className="text-gray-600 mb-4">
-              We're sorry, but something unexpected happened. Please try refreshing the page.
+              We're sorry, but something unexpected happened. Please try
+              refreshing the page.
             </p>
             <button
               onClick={() => window.location.reload()}

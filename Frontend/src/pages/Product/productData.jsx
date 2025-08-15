@@ -29,50 +29,18 @@ const ProductsData = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     try {
-  //       const response = await fetch(API_ROUTES.PRODUCT.GET_PRODUCTS);
-  //       const data = await response.json();
-  //       console.log("API Response Data:", data.products);
-
-  //       let products = [];
-  //       if (data.products) {
-  //         products = data.products;
-  //       } else if (Array.isArray(data)) {
-  //         products = data;
-  //       }
-
-  //       setAllProducts(products);
-  //       setOriginalProducts(products); // Store original products
-
-  //       let keyword = "";
-  //       if (data.products?.category) {
-  //         keyword = data.products?.category;
-  //       } else if (data.products?.name) {
-  //         keyword = data.products?.name;
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching products:", error);
-  //       setAllProducts([]);
-  //       setOriginalProducts([]);
-  //     }
-  //   };
-  //   fetchProducts();
-  // }, []);
-
   // Debounced search function
   const fetchProducts = async () => {
     setIsLoading(true);
     setHasError(false);
-    
+
     try {
       const response = await fetch(API_ROUTES.PRODUCT.GET_PRODUCTS);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       console.log("API Response Data:", data);
 
@@ -87,8 +55,8 @@ const ProductsData = () => {
       }
 
       // Filter out invalid products
-      const validProducts = products.filter(product => 
-        product && product._id && product.name && product.category
+      const validProducts = products.filter(
+        (product) => product && product._id && product.name && product.category
       );
 
       setAllProducts(validProducts);
@@ -133,14 +101,14 @@ const ProductsData = () => {
         const response = await fetch(
           `${API_ROUTES.PRODUCT.SEARCH_PRODUCTS}/${encodeURIComponent(term)}`
         );
-        
+
         if (!response.ok) {
           throw new Error(`Search failed: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log("Search API Response Data:", data);
-        
+
         if (data && data.products && Array.isArray(data.products)) {
           const validProducts = data.products.filter((p) => p && p._id);
           setAllProducts(validProducts);
@@ -156,10 +124,13 @@ const ProductsData = () => {
         // On error, fall back to client-side filtering
         const filteredProducts = originalProducts.filter(
           (product) =>
-            product && product.name && product.category && product.productDetails &&
+            product &&
+            product.name &&
+            product.category &&
+            product.productDetails &&
             (product.name.toLowerCase().includes(term.toLowerCase()) ||
-             product.category.toLowerCase().includes(term.toLowerCase()) ||
-             product.productDetails.toLowerCase().includes(term.toLowerCase()))
+              product.category.toLowerCase().includes(term.toLowerCase()) ||
+              product.productDetails.toLowerCase().includes(term.toLowerCase()))
         );
         setAllProducts(filteredProducts);
       } finally {
@@ -340,8 +311,12 @@ const ProductsData = () => {
       ) : hasError ? (
         <div className="text-center py-20">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">Failed to load products</h3>
-          <p className="text-gray-600 mb-4">Something went wrong while fetching products.</p>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            Failed to load products
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Something went wrong while fetching products.
+          </p>
           <button
             onClick={fetchProducts}
             className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
@@ -361,7 +336,8 @@ const ProductsData = () => {
                       src={each.image}
                       alt={each.name}
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                        e.target.src =
+                          "https://via.placeholder.com/300x200?text=Image+Not+Available";
                       }}
                     />
                   </Link>
