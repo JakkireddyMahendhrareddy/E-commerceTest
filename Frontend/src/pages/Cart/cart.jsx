@@ -45,6 +45,7 @@ const Cart = () => {
         }
 
         const data = await response.json();
+        console.log(data, "-----------------");
 
         // Handle different possible response structures
         let cartItems = [];

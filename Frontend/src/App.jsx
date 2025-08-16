@@ -15,18 +15,6 @@ import NotFound from "./components/NotFound";
 import Ship from "./pages/ship";
 
 function App() {
-  // Debug routing information
-  // console.log("🚀 App Component Rendered");
-  // console.log("📍 Available Routes:", [
-  //   "/",
-  //   "/products",
-  //   "/products/:id",
-  //   "/similar-products/:id",
-  //   "/cart",
-  //   "/login",
-  //   "/register",
-  // ]);
-
   return (
     <ErrorBoundary>
       <div className="flex flex-col justify-start min-h-screen">
